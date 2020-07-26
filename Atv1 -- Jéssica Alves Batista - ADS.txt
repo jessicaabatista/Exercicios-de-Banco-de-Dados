@@ -1,0 +1,65 @@
+create database Atv1;
+use Atv1;
+
+create table setor(
+	codSetor int not null,
+	nomeSetor varchar (30) not null,
+PRIMARY KEY (codSetor),
+)engine=innodb;
+
+CREATE TABLE funcionarios(
+	codigoF int not null,
+	nomeF varchar(30) not null,
+	emailF varchar(50) not null,
+	salarioF double not null,
+PRIMARY KEY (codigoF)
+FKsetor int,
+foreign key (FKsetor)  references setor (codSetor)
+)engine=innodb;
+
+CREATE TABLE dependenteFunc(
+	codDep int not null,
+	nomeDep varchar(30) not null,
+	emailDep varchar(50) not null,
+PRIMARY KEY (codDep)
+FKfuncionario int,
+foreign key (FKfuncionario)  references funcionario (codigoF)
+)engine=innodb;
+
+
+INSERT INTO `Atv1`.`setor` (`codSetor`, `nomeSetor`) VALUES ('10', 'TI');
+INSERT INTO `Atv1`.`setor` (`codSetor`) VALUES ('20', 'Contabilidade');
+INSERT INTO `Atv1`.`setor` (`codSetor`) VALUES ('30', 'RH');
+
+INSERT INTO `Atv1`.`funcionarios` (`codigoF`, `nomeF`, `emailF`, `salarioF`, `FKsetor`) VALUES ('01', 'Jéssica', 'jess123@gmail.com', '3000', '10');
+INSERT INTO `Atv1`.`funcionarios` (`codigoF`, `nomeF`, `emailF`, `salarioF`, `FKsetor`) VALUES ('02', 'Maria', 'maria123@gmail.com', '1000', ' 10');
+INSERT INTO `Atv1`.`funcionarios` (`codigoF`, `nomeF`, `emailF`, `salarioF`, `FKsetor`) VALUES ('03', 'José', 'jose123@gmail.com', '1500', '20');
+INSERT INTO `Atv1`.`funcionarios` (`codigoF`, `nomeF`, `emailF`, `salarioF`, `FKsetor`) VALUES ('04', 'Davi', 'davi123@gmail.com', '2000', '20');
+INSERT INTO `Atv1`.`funcionarios` (`codigoF`, `nomeF`, `emailF`, `salarioF`, `FKsetor`) VALUES ('05', 'Beatriz', 'bea123@gmail.com', '2500', '30');
+INSERT INTO `Atv1`.`funcionarios` (`codigoF`, `nomeF`, `emailF`, `salarioF`, `FKsetor`) VALUES ('06', 'Paulo', 'paulo123@gmail.com', '2000', '30');
+
+INSERT INTO `Atv1`.`dependente` (`codDep`, `nomeDep`, `emailDep`, `FKfuncionario`) VALUES ('7', 'Laura', 'laura123@gmail.com', '01');
+INSERT INTO `Atv1`.`dependente` (`codDep`, `nomeDep`, `emailDep`, `FKfuncionario`) VALUES ('8', 'João', 'joao123@gmail.com', '04');
+INSERT INTO `Atv1`.`dependente` (`codDep`, `nomeDep`, `emailDep`, `FKfuncionario`) VALUES ('9', 'Pedro', 'pedro123@gmail.com', '04');
+INSERT INTO `Atv1`.`dependente` (`codDep`, `nomeDep`, `emailDep`, `FKfuncionario`) VALUES ('11', 'Karla', 'karla123@gmail.com', '06');
+
+-- Pega o email do dependente do funcionario com salario igual a 1500
+SELECT emailDep FROM dependente WHERE FKfuncionario = (SELECT codigoF FROM funcionario WHERE salarioF = '1500');
+
+-- Pega o email do dependente do funcionario que tiver o maior salario
+SELECT emailDep FROM dependente WHERE FKfuncionario = (SELECT codigoF FROM funcionario WHERE MAX(salarioF));
+
+-- Pega o setor com salario maior que a media dos salarios
+SELECT FKsetor, salarioF FROM funcionario 
+GROUP BY FKsetor HAVING salarioF > (SELECT AVG(price) FROM 
+funcionario) ORDER BY FKsetor;
+
+-- Pega o salario de todos os funcionarios com dependentes
+SELECT salarioF, codigoF FROM funcionario 
+GROUP BY salarioF HAVING codigoF = (SELECT FKfuncionario FROM 
+dependente) ORDER BY FKsetor;
+
+--
+SELECT * FROM dependente,
+(SELECT product_id, COUNT (product_id) product_count FROM purchases GROUP BY product_id) purchases_data
+WHERE p.product_id = purchases_data.product_id;
